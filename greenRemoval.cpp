@@ -56,6 +56,9 @@ int main(int argc, char **argv) {
   }
 
   auto greenPatch = getGreenPatch(hsv, offset_x);
+  cv::Scalar mean, stddev;
+  cv::meanStdDev(greenPatch, mean, stddev);
+  std::cout << "Patch mean: " << mean << "; stddev: " << stddev << std::endl;
 
   return 0;
 }
