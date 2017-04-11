@@ -58,5 +58,25 @@ int main(int argc, char **argv) {
   cv::meanStdDev(greenPatch, mean, stddev);
   std::cout << "Patch mean: " << mean << "; stddev: " << stddev << std::endl;
 
+  cv::Mat mask = cv::Mat::zeros(rgb.size(), CV_8UC1);
+  mask.forEach<uchar>([&](uchar &v, const int pos[]) {
+    auto color = hsv.at<cv::Vec<uchar, 3>>(cv::Point(pos[1], pos[0]));
+    auto delta_h = std::abs(color[0] - mean[0]);
+    v = (delta_h > 2.0 * stddev[0] + 5.0) ? 1 : 0;
+  });
+
+  auto morph_kernel =
+      cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(5, 5));
+  cv::morphologyEx(mask, mask, cv::MORPH_CLOSE, morph_kernel);
+  cv::morphologyEx(mask, mask, cv::MORPH_ERODE, morph_kernel);
+
+  cv::Mat combined;
+  rgb.copyTo(combined, mask);
+
+  cv::imshow("input", rgb);
+  cv::imshow("mask", mask * 255);
+  cv::imshow("combined", combined);
+  cv::waitKey(0);
+
   return 0;
 }
