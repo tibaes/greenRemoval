@@ -5,17 +5,15 @@
 #include <iostream>
 
 cv::Mat computeHSVHistogram(const cv::Mat &hsv) {
-  int hbins = 30; // Quantize the hue to 30 levels
-  int sbins = 32; // and the saturation to 32 levels
-  int histSize[] = {hbins, sbins};
+  int hbins = 45; // Quantize the hue to 45 levels
+  int histSize[] = {hbins};
 
   float hranges[] = {0, 180}; // hue: 0 - 179 degrees, see cvtColor
-  float sranges[] = {0, 256}; // saturation: gray to pure spectrum color
-  const float *ranges[] = {hranges, sranges};
+  const float *ranges[] = {hranges};
 
-  int channels[] = {0, 1};
+  int channels[] = {0};
   cv::Mat rawHist, normHist;
-  cv::calcHist(&hsv, 1, channels, cv::Mat(), rawHist, 2, histSize, ranges,
+  cv::calcHist(&hsv, 1, channels, cv::Mat(), rawHist, 1, histSize, ranges,
                true, // the histogram is uniform
                false);
   cv::normalize(rawHist, normHist, 1.0, 0.0, cv::NORM_L1);
